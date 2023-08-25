@@ -70,6 +70,7 @@ const ElectronApp = {
             // height: settings.height,
             // x: settings.x,
             // y: settings.y,
+            fullscreen: true,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,

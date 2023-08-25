@@ -555,11 +555,11 @@ export class FileState {
             const __files: FileDescriptor[] = await this.list(path)
             //***from update files
             const dirs = filterDirs(__files)
-            filterFiles(__files)
             const SortFn = getSortMethod(this.sortMethod, this.sortOrder)
             const files = dirs
                 .sort(this.sortMethod !== 'size' ? SortFn : getSortMethod('name', 'asc'))
-                .concat(__files.sort(SortFn))
+                .concat(filterFiles(__files).sort(SortFn))
+            //*
 
             const getPath = (fd: FileDescriptor) => ''.concat(fd.dir, '/', fd.name, fd.extension)
             this.api.off()
