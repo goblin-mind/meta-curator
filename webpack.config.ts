@@ -94,10 +94,8 @@ export default [
         {
             target: 'electron-main',
             entry: { main: './src/electron/main.ts' },
-
             externals: {
                 sqlite3: 'commonjs sqlite3',
-                sharp: 'commonjs sharp',
             },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
@@ -118,7 +116,6 @@ export default [
             entry: { gui: './src/gui/index.tsx' },
             externals: {
                 sqlite3: 'commonjs sqlite3',
-                sharp: 'commonjs sharp',
             },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),

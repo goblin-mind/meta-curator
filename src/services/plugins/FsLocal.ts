@@ -228,7 +228,6 @@ export class LocalApi implements FsApi {
                 isSym: stats.isSymbolicLink(),
                 target: (stats.isSymbolicLink() && fs.readlinkSync(fullPath)) || null,
                 id: MakeId({ ino: stats.ino, dev: stats.dev }),
-                thumbDataUri: '',
             }
 
             return file
@@ -343,7 +342,6 @@ export class LocalApi implements FsApi {
             isSym: stats.isSymbolicLink(),
             target: (stats.isSymbolicLink() && name) || null,
             id: MakeId({ ino: stats.ino, dev: stats.dev }),
-            thumbDataUri: '',
         }
 
         return file

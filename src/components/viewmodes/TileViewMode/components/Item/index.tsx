@@ -54,6 +54,7 @@ export const Item = ({
             [],
         ),
     })
+
     const [imageSrc, setImageSrc] = useState(null)
 
     const isImage = item.nodeData.type === 'img'
@@ -92,6 +93,7 @@ export const Item = ({
             fetchImage()
         }
     }, [item])
+
     return (
         <>
             <div
