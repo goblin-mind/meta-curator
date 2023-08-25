@@ -36,6 +36,7 @@ export interface FileDescriptor {
     type: FileType
     isSym: boolean
     id: FileID
+    thumbDataUri: string
 }
 
 export interface FsOptions {

@@ -234,6 +234,7 @@ class Client {
                                     ino: BigInt(mDate.getTime()),
                                     dev: BigInt(new Date().getTime()),
                                 },
+                                thumbDataUri: '',
                             }
                             return file
                         })

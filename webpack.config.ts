@@ -32,6 +32,10 @@ const baseConfig: webpack.Configuration = {
     module: {
         rules: [
             {
+                test: /\.worker\.ts$/,
+                use: { loader: 'worker-loader' },
+            },
+            {
                 test: /\.tsx?$/,
                 exclude: /(node_modules)/,
                 resolve: {
@@ -90,6 +94,11 @@ export default [
         {
             target: 'electron-main',
             entry: { main: './src/electron/main.ts' },
+
+            externals: {
+                sqlite3: 'commonjs sqlite3',
+                sharp: 'commonjs sharp',
+            },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new DefinePlugin({
@@ -107,6 +116,10 @@ export default [
         {
             target: 'electron-renderer',
             entry: { gui: './src/gui/index.tsx' },
+            externals: {
+                sqlite3: 'commonjs sqlite3',
+                sharp: 'commonjs sharp',
+            },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new HtmlWebpackPlugin({
