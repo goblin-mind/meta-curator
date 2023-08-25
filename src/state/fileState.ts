@@ -545,7 +545,6 @@ export class FileState {
 
         return this.cwd(path, path2, skipHistory)
     }
-    thumbCache: any = {}
     // changes current path and retrieves file list
     cwd = withConnection(async (path: string, path2 = '', skipHistory = false): Promise<string> => {
         const joint = path2 ? this.join(path, path2) : this.api.sanityze(path)
@@ -610,12 +609,7 @@ export class FileState {
                 return Promise.all(workerTasks)
             }
 
-            processImagesInBatch(
-                files.filter((fd) => fd.type === 'img' && !this.thumbCache[getPath(fd)]).map(getPath),
-                fixedHeight,
-                5,
-                50,
-            )
+            processImagesInBatch(files.filter((fd) => fd.type === 'img').map(getPath), fixedHeight, 5, 50)
             runInAction(() => {
                 const isSameDir = this.path === path
 

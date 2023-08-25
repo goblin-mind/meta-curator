@@ -16,7 +16,6 @@ export class TagManager {
     }
 
     private initializeTables(): void {
-        //this.db.run(`DROP TABLE tags`);
         // Create tables if they don't exist
 
         // this.db.run(`DROP TABLE file_tags`)

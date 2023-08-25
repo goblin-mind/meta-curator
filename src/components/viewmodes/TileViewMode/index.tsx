@@ -166,7 +166,6 @@ export const TileViewMode = forwardRef<ViewModeActions, ViewModeProps<TileViewMo
                                             key={`row_${virtualRow.index}_item_${index}`}
                                             item={item}
                                             itemIndex={virtualRow.index * itemsPerRow + index}
-                                            //width={itemWidth}
                                             margin={margin}
                                             onItemClick={onItemClick}
                                             onItemDoubleClick={onItemDoubleClick}
