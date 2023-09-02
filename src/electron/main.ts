@@ -304,6 +304,11 @@ const ElectronApp = {
             console.log('list-tags received')
             return tagManager.getAllTags()
         })
+
+        ipcMain.handle('increment-viewcount', (event, fileName) => {
+            console.log('increment-viewcount received', { fileName })
+            return tagManager.incrementViewCount(fileName)
+        })
         await this.createMainWindow()
     },
 }

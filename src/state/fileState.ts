@@ -10,9 +10,6 @@ import { getSortMethod, TSORT_METHOD_NAME, TSORT_ORDER } from '$src/services/FsS
 import { AppAlert } from '$src/components/AppAlert'
 import { filterDirs, filterFiles, filterHiddenFiles } from '$src/utils/fileUtils'
 import { ViewModeName } from '$src/hooks/useViewMode'
-import { createCanvas, loadImage } from 'canvas'
-
-import Worker from '$src/image.worker'
 
 export type TStatus = 'busy' | 'ok' | 'login' | 'offline'
 
@@ -250,7 +247,9 @@ export class FileState {
     }
 
     onFSChange = (filename: string): void => {
-        this.reload()
+        if (this.viewmode !== 'tiles') {
+            this.reload()
+        }
     }
 
     private getNewFS(path: string, skipContext = false): Fs {
@@ -552,64 +551,7 @@ export class FileState {
 
         try {
             const path = await this.api.cd(joint)
-            const __files: FileDescriptor[] = await this.list(path)
-            //***from update files
-            const dirs = filterDirs(__files)
-            const SortFn = getSortMethod(this.sortMethod, this.sortOrder)
-            const files = dirs
-                .sort(this.sortMethod !== 'size' ? SortFn : getSortMethod('name', 'asc'))
-                .concat(filterFiles(__files).sort(SortFn))
-            //*
-
-            const getPath = (fd: FileDescriptor) => ''.concat(fd.dir, '/', fd.name, fd.extension)
-            this.api.off()
-            const fixedHeight = 256
-
-            function processImagesInBatch(
-                imageSources: string[],
-                fixedHeight: number,
-                nWorkers: number,
-                chunkSize: number,
-            ): Promise<void[]> {
-                // Divide images into chunks
-                const chunks: string[][] = []
-                for (let i = 0; i < imageSources.length; i += chunkSize) {
-                    chunks.push(imageSources.slice(i, i + chunkSize))
-                }
-
-                // Function to process a single chunk with a worker
-                const processChunk = (chunk: string[]): Promise<void> => {
-                    return new Promise<void>((resolve) => {
-                        const worker = new Worker()
-
-                        worker.addEventListener('message', (e: MessageEvent) => {
-                            worker.terminate()
-                            resolve()
-                        })
-
-                        worker.postMessage({
-                            images: chunk,
-                            fixedHeight: fixedHeight,
-                        })
-                    })
-                }
-
-                // Function to process chunks with a single worker
-                const processChunksWithWorker = async (workerChunks: string[][]) => {
-                    for (const chunk of workerChunks) {
-                        await processChunk(chunk)
-                    }
-                }
-
-                // Divide chunks among workers
-                const workerTasks = Array.from({ length: nWorkers }, (_, i) => {
-                    return chunks.filter((_, chunkIndex) => chunkIndex % nWorkers === i)
-                }).map(processChunksWithWorker)
-
-                return Promise.all(workerTasks)
-            }
-
-            processImagesInBatch(files.filter((fd) => fd.type === 'img').map(getPath), fixedHeight, 5, 50)
+            const files: FileDescriptor[] = await this.list(path)
             runInAction(() => {
                 const isSameDir = this.path === path
 
@@ -719,7 +661,7 @@ export class FileState {
 
     openDirectory(file: { dir: string; fullname: string }): Promise<string | void> {
         console.log(file.dir, file.fullname)
-        return this.cd(file.dir, file.fullname)
+        return file.fullname === '' ? this.cd(file.dir, file.fullname) : Promise.resolve(file.fullname)
     }
 
     openTerminal(path: string): Promise<void> {

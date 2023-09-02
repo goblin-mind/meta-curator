@@ -1,19 +1,10 @@
-import { openDatabase, addBlobs, retrieveBlobs } from './indexDB'
-import _ from 'lodash'
 self.addEventListener(
     'message',
     async (e: MessageEvent) => {
-        const images: string[] = e.data.images
-        const fixedHeight: number = e.data.fixedHeight
+        const images: string[] = e.data.paths
+        const fixedHeight = 256 //e.data.fixedHeight
         // Open the IndexedDB connection
-        const db = await openDatabase()
-        const cachedBlobs = await retrieveBlobs(db, images)
         async function resizeImage(path: string, fixedHeight: number) {
-            const cached = cachedBlobs.find((bw) => bw.path === path)
-            if (cached) {
-                console.debug('cache hit', cached)
-                return cached
-            }
             try {
                 const response = await fetch(path)
                 const blob = await response.blob()
@@ -27,32 +18,36 @@ self.addEventListener(
                 if (ctx) {
                     ctx.drawImage(img, 0, 0, newWidth, fixedHeight)
                     const blob = await offscreenCanvas.convertToBlob()
-                    return { path, blob }
+                    function blobToBase64(blob: Blob) {
+                        return new Promise((resolve, reject) => {
+                            const reader = new FileReader()
+                            reader.onloadend = () => {
+                                const base64data = reader.result as string
+                                resolve(base64data)
+                            }
+                            reader.onerror = (error) => {
+                                reject(error)
+                            }
+                            reader.readAsDataURL(blob)
+                        })
+                    }
+                    return { path, value: await blobToBase64(blob) }
                 } else {
                     console.log(new Error('Failed to get canvas context'))
-                    return { path, blob: null }
+                    return { path, value: null }
                 }
             } catch (e) {
                 console.log(e, path)
-                return { path, blob: null }
+                return { path, value: null }
             }
         }
 
-        const results: { path: string; blob: Blob }[] = []
+        const results: { path: string; value: any }[] = []
         for (const imageSrc of images) {
             results.push(await resizeImage(imageSrc, fixedHeight))
         }
-        const toAdd = _.difference(
-            results.filter((res) => res.blob != null),
-            cachedBlobs,
-        )
-        if (toAdd.length > 0) {
-            console.log('adding  blobs', toAdd)
 
-            await addBlobs(db, toAdd)
-        }
-
-        self.postMessage('done')
+        self.postMessage(results)
     },
     false,
 )

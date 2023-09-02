@@ -7,8 +7,20 @@ import { InlineEditEvent, ItemMouseEvent, makeEvent } from '$src/hooks/useViewMo
 import { DraggedObject, FileViewItem } from '$src/types'
 import { useFileClick } from '$src/hooks/useFileClick'
 import { useDragFile } from '$src/hooks/useDragFile'
-import { openDatabase, retrieveBlobs } from '$src/indexDB'
 
+import styled from 'styled-components'
+
+interface ImgProps {
+    iconSize?: string
+    tileHeight?: string
+}
+
+const Img = styled.img<ImgProps>`
+    height: ${(props) => props.tileHeight || 'auto'};
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+`
 interface Props {
     item: FileViewItem
     itemIndex: number
@@ -21,6 +33,7 @@ interface Props {
     onItemRightClick: (event: ItemMouseEvent) => void
     onInlineEdit: (event: InlineEditEvent) => void
     getDragProps: (index: number) => DraggedObject
+    cacheManager: any
 }
 
 export const Item = ({
@@ -35,6 +48,7 @@ export const Item = ({
     itemIndex,
     iconSize,
     isDarkModeActive,
+    cacheManager,
 }: Props) => {
     const clickHandler = makeEvent(itemIndex, item, onItemClick)
     const doubleClickHandler = makeEvent(itemIndex, item, onItemDoubleClick)
@@ -60,33 +74,17 @@ export const Item = ({
     const isImage = item.nodeData.type === 'img'
     useEffect(() => {
         if (isImage) {
-            function blobToBase64(blob: Blob) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader()
-                    reader.onloadend = () => {
-                        const base64data = reader.result as string
-                        resolve(base64data)
-                    }
-                    reader.onerror = (error) => {
-                        reject(error)
-                    }
-                    reader.readAsDataURL(blob)
-                })
-            }
             // Open the IndexedDB connection
             const fetchImage = async () => {
-                const db = await openDatabase()
-
-                // Retrieve the data URL from IndexedDB using the file path
-                const dataUrls = await retrieveBlobs(db, [
+                const dataUrl = await cacheManager.get(
                     item.nodeData.dir.concat('/', item.nodeData.name, item.nodeData.extension),
-                ])
+                )
 
                 // Update the component state with the retrieved data URL
-                if (dataUrls[0]) {
-                    const base64 = await blobToBase64(dataUrls[0].blob)
+                if (dataUrl) {
+                    //const base64 = await blobToBase64(dataUrl)
 
-                    setImageSrc(base64)
+                    setImageSrc(dataUrl)
                 }
             }
 
@@ -104,11 +102,12 @@ export const Item = ({
                     overflow: 'hidden',
                     //width: `${width}px`,
                     alignSelf: 'start',
+                    width: '270px',
                 }}
                 {...mouseProps}
             >
-                {imageSrc ? (
-                    <img src={imageSrc} alt={item.name} style={{ height: iconSize }} />
+                {item.nodeData.type === 'img' && imageSrc ? (
+                    <Img src={imageSrc} alt={item.name} tileHeight={`${iconSize}px`} />
                 ) : (
                     <Icon
                         icon={item.icon}
