@@ -7,7 +7,13 @@ import * as nodeDiskInfo from 'node-disk-info'
 import { ALL_DIRS } from '$src/utils/platform'
 import { WSL_PREFIX, getWSLDistributions, WslDistribution } from '$src/utils/wsl'
 import type Drive from 'node-disk-info/dist/classes/drive'
-
+import { TagCount } from '$src/IsoTagTypes'
+import { ipcRenderer } from 'electron'
+//import { TagNode } from '$src/tagManager'
+interface TagNode {
+    tag: string
+    children: TagNode[]
+}
 const CHECK_FOR_DRIVES_DELAY = 5000
 const CHECK_FOR_WSL_DELAY = 30000
 
@@ -19,6 +25,7 @@ export interface Favorite {
     isRemovable?: boolean
     isVirtual?: boolean
     hasINotify?: boolean
+    depth?: number
 }
 
 export const filterSystemDrive = ({ filesystem, mounted }: Drive) => {
@@ -31,9 +38,36 @@ export const filterSystemDrive = ({ filesystem, mounted }: Drive) => {
 }
 
 export class FavoritesState {
+    getTagTrees() {
+        return fetch('http://localhost:3000/resources/tags/tree').then((response) => response.json())
+    }
+    buildBookmarks(tagNodes: TagNode[]) {
+        let id = 5
+        const transformToTreeNode = (node: TagNode, breadcrumbs: string[]): any => {
+            breadcrumbs = breadcrumbs.concat([node.tag])
+            const path = `query:${breadcrumbs.join(' AND ')}`
+            return {
+                id: id++, // Unique ID for the node
+                childNodes: node.children.map((child) => transformToTreeNode(child, breadcrumbs)),
+                label: `${node.tag}`,
+                path,
+                icon: IconNames.FOLDER_CLOSE,
+                isReadOnly: false,
+                depth: breadcrumbs.length,
+                key: `p_${breadcrumbs.join('_')}`,
+                isExpanded: true,
+                nodeData: path,
+            }
+        }
+        const filteredList = tagNodes.map((tagNode) => {
+            return transformToTreeNode(tagNode, [])
+        })
+        runInAction(() => this.bookmarks.replace(filteredList))
+    }
     shortcuts = observable<Favorite>([])
     places = observable<Favorite>([])
     distributions = observable<Favorite>([])
+    bookmarks = observable<any>([])
     previousPlaces: Drive[] = []
 
     buildShortcuts(): void {
@@ -116,9 +150,13 @@ export class FavoritesState {
      */
     checkForNewDrives = async (): Promise<void> => {
         const usableDrives = await this.getDrivesList()
+
         if (this.hasDriveListChanged(usableDrives)) {
             this.previousPlaces = usableDrives
             this.buildPlaces(usableDrives)
+            const tags = await this.getTagTrees()
+
+            this.buildBookmarks(tags)
         }
         // restart timeout in any case
         this.launchTimeout(false, this.checkForNewDrives, CHECK_FOR_DRIVES_DELAY)

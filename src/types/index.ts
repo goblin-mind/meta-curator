@@ -15,6 +15,8 @@ export interface ViewDescriptor {
 }
 
 export interface FileViewItem {
+    imageUrl?: any
+    tags?: any
     name: string
     icon: IconName
     size: string

@@ -21,6 +21,8 @@ export interface FileID {
 }
 
 export interface FileDescriptor {
+    imageUrl?: any
+    tags?: any
     dir: string
     name: string
     fullname: string

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, MutableRefObject } from 'react'
+import React, { useCallback, useRef, MutableRefObject, useState, useEffect } from 'react'
 import { observer } from 'mobx-react'
 import { ContextMenu2, ContextMenu2ChildrenProps, ContextMenu2ContentProps } from '@blueprintjs/popover2'
 import { HotkeysTarget2, Classes } from '@blueprintjs/core'
@@ -19,6 +19,7 @@ import { ArrowKey, DraggedObject, FileViewItem } from '$src/types'
 import { HeaderMouseEvent, InlineEditEvent, ItemMouseEvent, useViewMode } from '$src/hooks/useViewMode'
 import { useStores } from '$src/hooks/useStores'
 import { useKeyDown } from '$src/hooks/useKeyDown'
+import { TagCount } from '$src/IsoTagTypes'
 
 interface Props {
     hide: boolean
@@ -43,6 +44,7 @@ export function buildNodeFromFile(
         isSelected: !!isSelected,
         isEditing,
         size: (!file.isDir && formatBytes(file.length)) || '--',
+        tags: file.tags,
     }
 
     return res
@@ -71,7 +73,7 @@ const FileView = observer(({ hide }: Props) => {
     const winState = appState.getWinStateFromViewId(viewState.viewId)
     const { t } = useTranslation()
     const cache = viewState.getVisibleCache()
-    const { files, cursor, editingId, viewmode } = cache
+    const { files, cursor, editingId, viewmode, qpath } = cache
     const cursorIndex = cache.getFileIndex(cursor)
     const isViewActive = viewState.isActive && !hide
     const keepSelection = !!cache.selected.length
@@ -82,13 +84,14 @@ const FileView = observer(({ hide }: Props) => {
         }),
     )
     const rowCount = nodes.length
-
+    const [relatedTags, setRelatedTags] = useState<string[]>([])
     const rightClickFileIndexRef: MutableRefObject<number> = useRef<number>()
 
     const { ViewMode, getActions, viewmodeRef } = useViewMode(viewmode)
     const viewmodeOptions = {
-        iconSize: 56,
+        iconSize: 256,
         isSplitViewActive: winState.splitView,
+        relatedTags: relatedTags,
     }
     console.log('render!', { cursorIndex, cursor })
 
@@ -142,6 +145,27 @@ const FileView = observer(({ hide }: Props) => {
         },
     ])
 
+    useEffect(() => {
+        const fetchRelevantTags = async (qpath?: string) => {
+            // Replace with your actual DB query
+            const data = await fetch('http://localhost:3000/resources/tags/related?query=' + qpath).then((response) =>
+                response.json(),
+            )
+
+            //await ipcRenderer.invoke('list-related-tags', qpath)
+            setRelatedTags(data)
+        }
+        if (qpath?.startsWith('query')) {
+            //todo sis used to work with tag condition only
+            const query = qpath.split(':')[1]
+            fetchRelevantTags(query)
+        } else {
+            fetchRelevantTags()
+        }
+        //fetchTagRoots()
+        // ipcRenderer.invoke('get-heirarchy').then(console.log)
+    }, [qpath])
+
     const getRow = (index: number): FileViewItem => nodes[index]
 
     const onHeaderClick = ({ data: newMethod }: HeaderMouseEvent): void => cache.setSort(newMethod)
@@ -154,14 +178,22 @@ const FileView = observer(({ hide }: Props) => {
         }
     }
 
-    const onBlankAreaClick = () => cache.reset()
+    const onBlankAreaClick = () => {
+        cache.clearSelection()
+        console.log('blnk click')
+    }
 
     const onItemClick = ({ index, event }: ItemMouseEvent): void => {
         const item = nodes[index]
         const file = item.nodeData
         const toggleMode = isMac ? event.metaKey : event.ctrlKey
 
-        selectFile(file, toggleMode, event.shiftKey)
+        if (file.type === 'img') {
+            selectFile(file, true, false)
+            openFileOrDirectory(file, true, item.imageUrl)
+        } else {
+            selectFile(file, toggleMode, event.shiftKey)
+        }
     }
 
     const onInlineEdit = ({ action, data }: InlineEditEvent) => {
@@ -181,24 +213,41 @@ const FileView = observer(({ hide }: Props) => {
     }
 
     const onItemDoubleClick = ({ event }: ItemMouseEvent): void => {
-        openFileOrDirectory(cursor, isMac ? event.altKey : event.ctrlKey)
+        if (cursor.type === 'img') {
+            selectFile(cursor, false, true)
+        } else {
+            openFileOrDirectory(cursor, isMac ? event.altKey : event.ctrlKey, undefined)
+        }
+
+        //openFileOrDirectory(cursor, !event.ctrlKey /*isMac ? event.altKey : event.ctrlKey*/)
     }
 
-    const openFileOrDirectory = (file: FileDescriptor, useInactiveCache: boolean): void => {
-        if (!file.isDir) {
+    const openFileOrDirectory = (file: FileDescriptor, useInactiveCache: boolean, biggestUrl: string): void => {
+        if (!file.isDir && file.type !== 'img') {
             cache.openFile(appState, file)
         } else {
             const dir = {
-                dir: cache.join(file.dir, file.fullname),
-                fullname: '',
+                dir: biggestUrl ? biggestUrl : cache.join(file.dir, file.fullname), //file.dir.startsWith('http')?'C:\\':
+                fullname: file.type === 'img' ? file.fullname : '',
             }
+            if (file.type === 'img') {
+                fetch('http://localhost:3000/resources/touch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ fileName: dir.dir }),
+                })
+                //ipcRenderer.invoke('increment-viewcount', dir.dir)
+            }
+
             appState.openDirectory(dir, !useInactiveCache)
         }
     }
 
     const onOpenFile = (e: KeyboardEvent): void => {
         if (isViewActive && cursor) {
-            openFileOrDirectory(cursor, isMac ? e.altKey : e.ctrlKey)
+            openFileOrDirectory(cursor, isMac ? e.altKey : e.ctrlKey, undefined)
         }
     }
 
@@ -256,53 +305,83 @@ const FileView = observer(({ hide }: Props) => {
         return props.isOpen ? <FileContextMenu fileUnderMouse={rightClickFile} /> : null
     }
 
+    const isImg = (filePath: string) => {
+        const match = filePath.match(/\.([a-zA-Z0-9]+)(?:[\?\#]|$)/)
+        if (!match) return false
+
+        const extension = match[1]
+        const Extensions = {
+            img: /\.(png|jpeg|jpg|gif|pcx|tiff|raw|webp|svg|heif|bmp|ilbm|iff|lbm|ppm|pgw|pbm|pnm|psd)/,
+        }
+
+        return Extensions.img.test(`.${extension}`)
+    }
+
+    const isLink = (filePath: string) => {
+        return filePath.startsWith('http') && !isImg(filePath)
+    }
+
     return (
         <HotkeysTarget2 hotkeys={hotkeys}>
             <ContextMenu2 content={renderFileContextMenu}>
-                {(ctxMenuProps: ContextMenu2ChildrenProps) => (
-                    <div
-                        ref={ctxMenuProps.ref}
-                        onContextMenu={(e) => {
-                            // use files.length to tell menu handler we clicked on the blank area
-                            rightClickFileIndexRef.current = files.length
-                            ctxMenuProps.onContextMenu(e)
-                        }}
-                        className={classNames('fileListSizerWrapper', ctxMenuProps.className)}
-                    >
-                        {ctxMenuProps.popover}
-                        <ViewMode
-                            cursorIndex={cursorIndex}
-                            itemCount={nodes.length}
-                            getItem={getRow}
-                            getDragProps={getDraggedProps}
-                            onItemClick={onItemClick}
-                            onItemDoubleClick={onItemDoubleClick}
-                            onHeaderClick={onHeaderClick}
-                            onBlankAreaClick={onBlankAreaClick}
-                            onInlineEdit={onInlineEdit}
-                            onItemRightClick={({ index, event }) => {
-                                rightClickFileIndexRef.current = index
-                                ctxMenuProps.onContextMenu(event)
+                {(ctxMenuProps: ContextMenu2ChildrenProps) =>
+                    isLink(cache?.path) ? (
+                        <div className="imgcontainer">
+                            <iframe src={cache.path} width="100%" height="90%"></iframe>
+                        </div>
+                    ) : nodes[cursorIndex]?.nodeData?.imageUrl ? (
+                        <div className="imgcontainer">
+                            <img src={cache.path}></img>
+                        </div>
+                    ) : isImg(cache?.path) ? (
+                        <div className="imgcontainer">
+                            <img src={cache.path}></img>
+                        </div>
+                    ) : (
+                        <div
+                            ref={ctxMenuProps.ref}
+                            onContextMenu={(e) => {
+                                // use files.length to tell menu handler we clicked on the blank area
+                                rightClickFileIndexRef.current = files.length
+                                ctxMenuProps.onContextMenu(e)
                             }}
-                            columns={[
-                                {
-                                    label: t('FILETABLE.COL_NAME'),
-                                    key: 'name',
-                                    sort: cache.sortMethod === 'name' ? cache.sortOrder : 'none',
-                                },
-                                {
-                                    label: t('FILETABLE.COL_SIZE'),
-                                    key: 'size',
-                                    sort: cache.sortMethod === 'size' ? cache.sortOrder : 'none',
-                                },
-                            ]}
-                            status={cache.status}
-                            error={cache.error}
-                            isDarkModeActive={isDarkModeActive}
-                            options={viewmodeOptions}
-                        />
-                    </div>
-                )}
+                            className={classNames('fileListSizerWrapper', ctxMenuProps.className)}
+                        >
+                            {ctxMenuProps.popover}
+                            <ViewMode
+                                cursorIndex={cursorIndex}
+                                itemCount={nodes.length}
+                                getItem={getRow}
+                                getDragProps={getDraggedProps}
+                                onItemClick={onItemClick}
+                                onItemDoubleClick={onItemDoubleClick}
+                                onHeaderClick={onHeaderClick}
+                                onBlankAreaClick={onBlankAreaClick}
+                                onInlineEdit={onInlineEdit}
+                                onItemRightClick={({ index, event }) => {
+                                    rightClickFileIndexRef.current = index
+                                    ctxMenuProps.onContextMenu(event)
+                                }}
+                                columns={[
+                                    {
+                                        label: t('FILETABLE.COL_NAME'),
+                                        key: 'name',
+                                        sort: cache.sortMethod === 'name' ? cache.sortOrder : 'none',
+                                    },
+                                    {
+                                        label: t('FILETABLE.COL_SIZE'),
+                                        key: 'size',
+                                        sort: cache.sortMethod === 'size' ? cache.sortOrder : 'none',
+                                    },
+                                ]}
+                                status={cache.status}
+                                error={cache.error}
+                                isDarkModeActive={isDarkModeActive}
+                                options={viewmodeOptions}
+                            />
+                        </div>
+                    )
+                }
             </ContextMenu2>
         </HotkeysTarget2>
     )

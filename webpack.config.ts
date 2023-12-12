@@ -32,6 +32,10 @@ const baseConfig: webpack.Configuration = {
     module: {
         rules: [
             {
+                test: /\.worker\.ts$/,
+                use: { loader: 'worker-loader' },
+            },
+            {
                 test: /\.tsx?$/,
                 exclude: /(node_modules)/,
                 resolve: {
@@ -90,6 +94,9 @@ export default [
         {
             target: 'electron-main',
             entry: { main: './src/electron/main.ts' },
+            externals: {
+                sqlite3: 'commonjs sqlite3',
+            },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new DefinePlugin({
@@ -99,7 +106,24 @@ export default [
                     'window.ENV.HASH': JSON.stringify(gitHash),
                     'window.ENV.BUILD_DATE': JSON.stringify(buildDate),
                 }),
+                /*new WebpackShellPluginNext({
+                    onBuildStart: {
+                        scripts: ['nearleyc src/utils/tagLogic.ne -o src/utils/tagLogic.js'],
+                        blocking: true,
+                        parallel: false,
+                    },
+                    onBuildEnd: {
+                        scripts: [],
+                        blocking: false,
+                        parallel: true,
+                    },
+                }),*/
             ],
+            watchOptions: {
+                ignored: /node_modules/,
+                aggregateTimeout: 300,
+                poll: 1000,
+            },
         },
         baseConfig,
     ),
@@ -107,6 +131,9 @@ export default [
         {
             target: 'electron-renderer',
             entry: { gui: './src/gui/index.tsx' },
+            externals: {
+                sqlite3: 'commonjs sqlite3',
+            },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new HtmlWebpackPlugin({
