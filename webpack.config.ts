@@ -106,18 +106,6 @@ export default [
                     'window.ENV.HASH': JSON.stringify(gitHash),
                     'window.ENV.BUILD_DATE': JSON.stringify(buildDate),
                 }),
-                /*new WebpackShellPluginNext({
-                    onBuildStart: {
-                        scripts: ['nearleyc src/utils/tagLogic.ne -o src/utils/tagLogic.js'],
-                        blocking: true,
-                        parallel: false,
-                    },
-                    onBuildEnd: {
-                        scripts: [],
-                        blocking: false,
-                        parallel: true,
-                    },
-                }),*/
             ],
             watchOptions: {
                 ignored: /node_modules/,
@@ -131,9 +119,6 @@ export default [
         {
             target: 'electron-renderer',
             entry: { gui: './src/gui/index.tsx' },
-            externals: {
-                sqlite3: 'commonjs sqlite3',
-            },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new HtmlWebpackPlugin({

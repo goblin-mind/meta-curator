@@ -15,25 +15,10 @@ self.addEventListener(
             size?: number
         }
 
-        /*function extractImageUrls(html: string): string[] {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const imageElements = doc.querySelectorAll('img');
-            const urls = Array.from(imageElements).map(img => img.src);
-            return urls;
-        }*/
         function extractImageUrls(html: string): string[] {
             const regex = /<img[^>]+src=["']?([^"'>\s]+)["']?[^>]*>/gi
             const urls: any[] = []
-            /*let match
-            console.log(html)
-            while ((match = regex.exec(html)) !== null) {
-                const url = match[1]
-                console.log(url)
-                //if (url.indexOf('mini') < 0 && url.indexOf('thumb') < 0) {
-                    urls.push(url)
-                //}
-            }*/
+
             const parser = new htmlparser2.Parser(
                 {
                     onopentag(name: any, attribs: any) {
@@ -114,10 +99,6 @@ self.addEventListener(
                     ISCache[url] = {}
                     resolve({})
                 }
-                /* const img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = reject;
-                img.src = url;*/
             })
         }
 
@@ -128,12 +109,7 @@ self.addEventListener(
             const path = _path.replaceAll('\\', '/')
             try {
                 const { biggestImageCanv, biggestUrl } = await findBiggestImage(path)
-                /*  console.log('findBiggestImage',imgUrl)
-                const response = await fetch(imgUrl)
-                console.log(response)
-                const blob = await response.blob()
-                console.log('responseasblobdebug:', response, blob)
-                const img = await createImageBitmap(blob)*/
+
                 if (!biggestImageCanv) {
                     return { source: _path, resource: '404' }
                 }

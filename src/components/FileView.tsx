@@ -152,18 +152,14 @@ const FileView = observer(({ hide }: Props) => {
                 response.json(),
             )
 
-            //await ipcRenderer.invoke('list-related-tags', qpath)
             setRelatedTags(data)
         }
         if (qpath?.startsWith('query')) {
-            //todo sis used to work with tag condition only
             const query = qpath.split(':')[1]
             fetchRelevantTags(query)
         } else {
             fetchRelevantTags()
         }
-        //fetchTagRoots()
-        // ipcRenderer.invoke('get-heirarchy').then(console.log)
     }, [qpath])
 
     const getRow = (index: number): FileViewItem => nodes[index]
@@ -218,8 +214,6 @@ const FileView = observer(({ hide }: Props) => {
         } else {
             openFileOrDirectory(cursor, isMac ? event.altKey : event.ctrlKey, undefined)
         }
-
-        //openFileOrDirectory(cursor, !event.ctrlKey /*isMac ? event.altKey : event.ctrlKey*/)
     }
 
     const openFileOrDirectory = (file: FileDescriptor, useInactiveCache: boolean, biggestUrl: string): void => {
@@ -238,7 +232,6 @@ const FileView = observer(({ hide }: Props) => {
                     },
                     body: JSON.stringify({ fileName: dir.dir }),
                 })
-                //ipcRenderer.invoke('increment-viewcount', dir.dir)
             }
 
             appState.openDirectory(dir, !useInactiveCache)

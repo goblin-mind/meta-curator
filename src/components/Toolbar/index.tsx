@@ -16,7 +16,6 @@ import { useStores } from '$src/hooks/useStores'
 import { useMenuAccelerator } from '$src/hooks/useAccelerator'
 import { SortMenuToggle, ViewToggle } from './components'
 import { TSORT_METHOD_NAME, TSORT_ORDER } from '$src/services/FsSort'
-import { ipcRenderer } from 'electron'
 
 const ERROR_MESSAGE_TIMEOUT = 3500
 
@@ -100,13 +99,15 @@ export const Toolbar = observer(({ active }: Props) => {
     }
 
     const onBlur = (e: React.FocusEvent<HTMLInputElement>): void => {
-        /*const didClickOnSubmit = e.relatedTarget === submitButtonRef.current
+        /*
+        const didClickOnSubmit = e.relatedTarget === submitButtonRef.current
         // restore previous valid cache unless an error alert has been displayed:
         // this will cause the input to loose focus but we don't want to update the path
         // in that particular case
         if (!didClickOnSubmit && cache.path !== path && !document.body.classList.contains(Classes.OVERLAY_OPEN)) {
             setPath(cache.path)
-        }*/
+        }
+        */
     }
 
     const onReload = (): void => cache.reload()
@@ -162,7 +163,6 @@ export const Toolbar = observer(({ active }: Props) => {
             },
             body: JSON.stringify({ fileNames, tagNames }),
         })
-        //ipcRenderer.invoke('apply-tags', { fileNames, tagNames })
     }
 
     const onRemoveTags = (tags: any[]) => {
@@ -175,7 +175,6 @@ export const Toolbar = observer(({ active }: Props) => {
             },
             body: JSON.stringify({ tagNames }),
         })
-        //ipcRenderer.invoke('remove-tags', { tagNames })
     }
 
     const onFileAction = (action: string): void => {
@@ -301,7 +300,6 @@ export const Toolbar = observer(({ active }: Props) => {
                         isOpen={true}
                         onApplyTags={onApplyTags}
                         onClose={() => setIsApplyTagsDialogOpen(false)}
-                        // onValidation={(tags) => true} // Provide a validation function if needed
                     />
                 )}
                 {isRemoveTagsDialogOpen && (
@@ -309,7 +307,6 @@ export const Toolbar = observer(({ active }: Props) => {
                         isOpen={true}
                         onApplyTags={onRemoveTags}
                         onClose={() => setIsRemoveTagsDialogOpen(false)}
-                        // onValidation={(tags) => true} // Provide a validation function if needed
                     />
                 )}
 

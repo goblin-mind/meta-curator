@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import classNames from 'classnames'
 import { Colors, Icon } from '@blueprintjs/core'
-
 import { TruncatedText } from '$src/components/viewmodes/components/TruncatedText'
 import { InlineEditEvent, ItemMouseEvent, makeEvent } from '$src/hooks/useViewMode'
 import { DraggedObject, FileViewItem } from '$src/types'
@@ -9,9 +8,6 @@ import { useFileClick } from '$src/hooks/useFileClick'
 import { useDragFile } from '$src/hooks/useDragFile'
 
 import styled from 'styled-components'
-import { ipcRenderer } from 'electron'
-import { FileDescriptor } from '$src/services/Fs'
-import { TagCount } from '$src/IsoTagTypes'
 
 interface ImgProps {
     iconSize?: string
@@ -34,7 +30,6 @@ const StyledImg = styled.img<ImgProps>`
 `
 interface ButtonProps {
     bgc?: string
-    // Include other custom props as needed
 }
 const Button = styled.button<ButtonProps>`
     position: absolute;
@@ -46,7 +41,6 @@ const Button = styled.button<ButtonProps>`
 interface Props {
     item: FileViewItem
     itemIndex: number
-    //width: number
     margin: number
     iconSize: number
     isDarkModeActive: boolean
@@ -132,12 +126,9 @@ export const Item = ({
 
                 // Update the component state with the retrieved data URL
                 if (base64data) {
-                    //const base64 = await blobToBase64(dataUrl)
-
                     setImageSrc(base64data)
                 }
                 if (biggestUrl) {
-                    // setBiggestUrl(biggestUrl)
                     item.imageUrl = biggestUrl
                 }
             }
@@ -155,7 +146,6 @@ export const Item = ({
             },
             body: JSON.stringify({ fileNames: [getPath(item)], tagNames: [tag] }),
         })
-        // ipcRenderer.invoke('apply-tags', { fileNames: [getPath(item)], tagNames: [tag] })
         if (item.tags && item.tags.indexOf(tag) < 0) {
             item.tags += `,${tag}`
         }

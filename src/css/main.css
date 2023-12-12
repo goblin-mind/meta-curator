@@ -506,68 +506,67 @@ span.bp4-intent-warning{
 
 
 
-div#view_1 {
+.curator-gallery div#view_1 {
     overflow: auto;
 }
 
-::before {
+.curator-gallery ::before {
     display: none;
 }
 
-.bp4-button-group.bp4-fill.tablist {
+.curator-gallery .bp4-button-group.bp4-fill.tablist {
     position: fixed;
 }
 
 
-div#view_1 {
+.curator-gallery div#view_1 {
     width: 70% !important;
 }
 
-div#view_0 {
+.curator-gallery div#view_0 {
     width: 30% !important;
 }
 
-.bp4-tree.favoritesPanel.custom-scrollbar {
+.curator-gallery .bp4-tree.favoritesPanel.custom-scrollbar {
     width:5px
 }
 
 
-.bp4-navbar {
+.curator-gallery .bp4-navbar {
     display: none;
 }
 
-.bp4-button-group.bp4-fill.tablist {
-    /* visibility: hidden; */
+.curator-gallery .bp4-button-group.bp4-fill.tablist {
     opacity: 0;
     transition: opacity 0.3s;
 }
 
-.bp4-button-group.bp4-fill.tablist:hover {
+.curator-gallery .bp4-button-group.bp4-fill.tablist:hover {
     opacity: 1;
 }
 
-.bp4-tree.favoritesPanel.custom-scrollbar:hover {
+.curator-gallery .bp4-tree.favoritesPanel.custom-scrollbar:hover {
     display: initial;
 }
 
-.bp4-tree.favoritesPanel.custom-scrollbar:hover {
+.curator-gallery .bp4-tree.favoritesPanel.custom-scrollbar:hover {
     transition: width 0.3s;
     width: initial;
 }
 
-.bp4-control-group.toolbar:hover {
+.curator-gallery .bp4-control-group.toolbar:hover {
     height: initial;
     transition: height 0.3s;
     opacity: initial;
     transition: opacity 0.3s;
     
 }
-.bp4-control-group.toolbar {
+.curator-gallery .bp4-control-group.toolbar {
     opacity: 0;
     height: 5px;
 }
 
-div#view_1> .imgcontainer:hover {
+.curator-gallery div#view_1> .imgcontainer:hover {
     width: 98%;
     position: fixed;
     right:0;
@@ -582,7 +581,7 @@ div#view_1> .imgcontainer:hover {
     
     
 }
-div#view_1> .imgcontainer > img {
+.curator-gallery div#view_1> .imgcontainer > img {
     width:-webkit-fill-available !important;
     
 }

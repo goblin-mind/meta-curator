@@ -198,7 +198,6 @@ export class AppState {
 
             // FIXME this is the only place where we need
             // a path and not dir + fullname
-            //TODO need?
             if (viewState.getVisibleCache()?.path !== file.dir) {
                 // use openDirectory
                 viewState.addCache(file.dir, -1, {

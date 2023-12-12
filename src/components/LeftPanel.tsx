@@ -65,7 +65,6 @@ export const buildNodes = (
             isExpanded: expanded[1],
             label: t('FAVORITES_PANEL.PLACES'),
             childNodes: favorites.places.map((place) => ({
-                // id: `p_${place.path}`,
                 id: -1,
                 key: `p_${place.path}`,
                 label: <span title={place.path}>{place.label}</span>,
@@ -82,16 +81,9 @@ export const buildNodes = (
             childNodes: favorites.bookmarks as Array<TreeNodeInfo<string>>,
         },
     ]
-    //let expIx = 3
     const updatedNodes = overrideAttributeForAllNodes(nodes[2].childNodes, 'isExpanded', (node) => {
         return expanded[node.id as number]
     })
-    /*
-    expIx = 3
-    updatedNodes = overrideAttributeForAllNodes(updatedNodes, 'id', (node) => {
-        if ((node.id as number) < 0) return expIx++
-        return node.id
-    })*/
 
     if (shouldShowWsl) {
         const distributionNodes = favorites.distributions.map((distrib) => ({
@@ -133,9 +125,6 @@ export const LeftPanel = observer(({ hide }: { hide: boolean }) => {
         e: React.MouseEvent<HTMLElement>,
     ): Promise<void> => {
         try {
-            /* if (node.id === 's_bookmarks'{
-
-            })*/
             await appState.openDirectory({ dir: node.nodeData, fullname: '' }, !(isMac ? e.altKey : e.ctrlKey))
         } catch (err) {
             AppAlert.show(`${err.message} (${err.code})`, {
