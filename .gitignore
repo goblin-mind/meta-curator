@@ -6,4 +6,5 @@ build/
 e2e/build-e2e/
 e2e/cypress/screenshots/
 public
-tags.db
+*.db
+*.csv
