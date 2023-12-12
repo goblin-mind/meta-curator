@@ -1,13 +1,13 @@
 {
-    "name": "react-explorer",
-    "version": "3.1.0",
-    "description": "Plugin-based file explorer written with React",
+    "name": "curator-desktop",
+    "version": "0.8.0",
+    "description": "Tag gallery and file explorer written with React",
     "main": "build/main.js",
     "build": {
-        "productName": "React-Explorer",
-        "appId": "reactexplorer",
+        "productName": "Curator-Desktop",
+        "appId": "curatordesktop",
         "mac": {
-            "identity": "Nicolas Ramz",
+            "identity": "Goblin Mind",
             "gatekeeperAssess": false,
             "darkModeSupport": true,
             "icon": "icon.icns"
@@ -16,8 +16,8 @@
             "icon": "icon.ico"
         },
         "linux": {
-            "synopsis": "React-based FileManager",
-            "description": "Plugin-based file explorer written with React",
+            "synopsis": "React-based Tag gallery and file explorer",
+            "description": "Plugin-based Tag gallery and file explorer written with React",
             "category": "FileManager",
             "target": [
                 "deb",
@@ -53,9 +53,9 @@
         ]
     },
     "author": {
-        "name": "Nicolas Ramz",
-        "email": "nicolas.ramz@gmail.com",
-        "url": "https://www.warpdesign.fr"
+        "name": "Goblin Mind",
+        "email": "cherrycodes69@gmail.com",
+        "url": "https://github.com/goblin-mind"
     },
     "license": "MIT",
     "devDependencies": {

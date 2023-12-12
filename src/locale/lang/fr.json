@@ -76,7 +76,7 @@
         "SHORTCUT": {
             "OPEN_DEVTOOLS": "Outils de développement",
             "MAIN": {
-                "QUIT": "Quitter React-Explorer",
+                "QUIT": "Quitter Curator-Desktop",
                 "RELOAD_VIEW": "Recharger la vue",
                 "NEXT_VIEW": "Activer la vue suivante",
                 "PREVIOUS_VIEW": "Activer la vue précédente",
@@ -228,7 +228,7 @@
         "APP_MENUS": {
             "ABOUT": "À propos de React-Explorer",
             "PREFS": "Préférences",
-            "EXIT": "Quitter React-Explorer",
+            "EXIT": "Quitter Curator-Desktop",
             "TITLE_FILE": "Fichier",
             "TITLE_EDIT": "Editer",
             "TITLE_VIEW": "Vue",
@@ -248,7 +248,7 @@
             "RELOAD_VIEW": "Recharger Vue Active",
             "FORCE_RELOAD_APP": "Recharger l'App",
             "KEYBOARD_SHORTCUTS": "List des Raccourcis",
-            "ABOUT_TITLE": "React-Explorer",
+            "ABOUT_TITLE": "Curator-Desktop",
             "ABOUT_CONTENT": "Version: ${version}\nCommit: ${hash}\nDate: ${date}\nElectron: ${electron}\nChrome: ${chrome}\nNode: ${node}\nSE: ${platform} ${arch} ${release}",
             "ZOOM": "Zoom",
             "MINIMIZE": "Réduire",

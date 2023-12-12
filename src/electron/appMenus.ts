@@ -293,7 +293,7 @@ export class AppMenu {
             })
 
             app.setAboutPanelOptions({
-                applicationName: 'React-Explorer',
+                applicationName: 'Curator-Desktop',
                 applicationVersion: app.getVersion(),
                 version: this.getVersionString(),
             })

@@ -33,7 +33,7 @@ function getDefaultFolder() {
                 ? appInstance.getPath('home')
                 : platform === 'win32'
                 ? appInstance.getPath('temp')
-                : '/tmp/react-explorer'
+                : '/tmp/curator-desktop'
     }
 
     return defaultFolder

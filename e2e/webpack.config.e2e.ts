@@ -129,7 +129,7 @@ export default [
             entry: { gui: '../src/gui/index.tsx' },
             plugins: [
                 new HtmlWebpackPlugin({
-                    title: 'React-Explorer',
+                    title: 'Curator-Desktop',
                     template: '../index.html',
                 }),
                 new DefinePlugin({

@@ -94,9 +94,6 @@ export default [
         {
             target: 'electron-main',
             entry: { main: './src/electron/main.ts' },
-            externals: {
-                sqlite3: 'commonjs sqlite3',
-            },
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new DefinePlugin({
@@ -122,7 +119,7 @@ export default [
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new HtmlWebpackPlugin({
-                    title: 'React-Explorer',
+                    title: 'Curator-Desktop',
                     template: 'index.html',
                 }),
                 new DefinePlugin({

@@ -45,6 +45,10 @@ const baseConfig: webpack.Configuration = {
     },
     module: {
         rules: [
+            {
+                test: /\.worker\.ts$/,
+                use: { loader: 'worker-loader' },
+            },
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
             {
                 test: /\.tsx?$/,
@@ -130,7 +134,7 @@ export default [
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new HtmlWebpackPlugin({
-                    title: 'React-Explorer',
+                    title: 'Curator-Desktop',
                     template: 'index.html',
                 }),
                 new DefinePlugin({
