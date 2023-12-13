@@ -51,11 +51,11 @@ export const TileViewMode = forwardRef<ViewModeActions, ViewModeProps<TileViewMo
                 objectStore: 'IndexDbblobObjectStore6',
             },
             spawn: () => new Worker(),
-            memoryLimit: 500,
+            memoryLimit: 50,
             batchOptions: {
-                memory: { minBatchSize: 1, maxConcurrentBatches: 50, timeout: 10 },
+                memory: { minBatchSize: 1, maxConcurrentBatches: 20, timeout: 10 },
                 db: { minBatchSize: 10, maxConcurrentBatches: 5, timeout: 100 },
-                source: { minBatchSize: 1, maxConcurrentBatches: 1, timeout: 200 },
+                source: { minBatchSize: 1, maxConcurrentBatches: 2, timeout: 200 },
             },
         }
 
