@@ -1,13 +1,13 @@
 {
-    "name": "react-explorer",
-    "version": "3.1.0",
-    "description": "Plugin-based file explorer written with React",
+    "name": "curator-desktop",
+    "version": "0.8.0",
+    "description": "Tag gallery and file explorer written with React",
     "main": "build/main.js",
     "build": {
-        "productName": "React-Explorer",
-        "appId": "reactexplorer",
+        "productName": "Curator-Desktop",
+        "appId": "curatordesktop",
         "mac": {
-            "identity": "Nicolas Ramz",
+            "identity": "Goblin Mind",
             "gatekeeperAssess": false,
             "darkModeSupport": true,
             "icon": "icon.icns"
@@ -16,8 +16,8 @@
             "icon": "icon.ico"
         },
         "linux": {
-            "synopsis": "React-based FileManager",
-            "description": "Plugin-based file explorer written with React",
+            "synopsis": "React-based Tag gallery and file explorer",
+            "description": "Plugin-based Tag gallery and file explorer written with React",
             "category": "FileManager",
             "target": [
                 "deb",
@@ -44,8 +44,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged",
-            "pre-push": "npm run test:all"
+            "pre-commit": "lint-staged"
         }
     },
     "lint-staged": {
@@ -54,9 +53,9 @@
         ]
     },
     "author": {
-        "name": "Nicolas Ramz",
-        "email": "nicolas.ramz@gmail.com",
-        "url": "https://www.warpdesign.fr"
+        "name": "Goblin Mind",
+        "email": "cherrycodes69@gmail.com",
+        "url": "https://github.com/goblin-mind"
     },
     "license": "MIT",
     "devDependencies": {
@@ -69,34 +68,38 @@
         "@types/html-webpack-plugin": "^3.2.4",
         "@types/i18next": "^13.0.0",
         "@types/jest": "^24.0.18",
+        "@types/lodash": "^4.14.197",
+        "@types/mkdirp": "^0.5.2",
         "@types/mock-fs": "^4.10.0",
         "@types/node": "^12.0.0",
-        "@types/webpack": "^4.41.23",
+        "@types/offscreencanvas": "^2019.7.0",
+        "@types/styled-components": "^5.1.26",
         "@types/webpack-env": "^1.15.3",
+        "@types/webpack": "^4.41.23",
         "@typescript-eslint/eslint-plugin": "^5.42.1",
         "@typescript-eslint/parser": "^5.42.1",
         "aws-sdk": "^2.514.0",
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^11.0.0",
         "css-loader": "^6.7.1",
-        "electron": "^21.0.1",
         "electron-builder": "^23.2.0",
         "electron-devtools-installer": "^3.1.1",
-        "eslint": "^8.27.0",
+        "electron": "^21.0.1",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-no-only-tests": "^3.1.0",
         "eslint-plugin-prettier": "^4.2.1",
         "eslint-plugin-react": "^7.31.10",
+        "eslint": "^8.27.0",
         "file-loader": "^6.2.0",
         "fork-ts-checker-webpack-plugin": "^7.2.13",
         "hoist-non-react-statics": "^3.3.0",
         "html-webpack-plugin": "^5.5.0",
         "husky": "^3.0.9",
         "identity-obj-proxy": "^3.0.0",
-        "jest": "^29.3.1",
         "jest-canvas-mock": "^2.4.0",
         "jest-cli": "^29.3.1",
         "jest-environment-jsdom": "^29.3.1",
+        "jest": "^29.3.1",
         "lint-staged": "^10.4.2",
         "memfs": "^3.4.12",
         "mock-fs": "git+https://git@github.com/warpdesign/mock-fs.git",
@@ -112,31 +115,34 @@
         "typescript": "^4.8.4",
         "url-loader": "^4.1.1",
         "wait-on": "^3.3.0",
-        "webpack": "^5.74.0",
-        "webpack-cli": "^4.10.0"
+        "webpack-cli": "^4.10.0",
+        "webpack": "^5.74.0"
     },
     "dependencies": {
         "@babel/runtime": "^7.20.1",
         "@blueprintjs/core": "^4.12.0",
         "@blueprintjs/popover2": "^1.10.1",
         "@blueprintjs/select": "^4.8.11",
-        "@types/mkdirp": "^0.5.2",
-        "@types/react": "^16.9.2",
-        "@types/react-dom": "^16.9.0",
         "classnames": "^2.2.6",
         "del": "git+https://git@github.com/warpdesign/del.git",
         "electron-window-state": "git+https://git@github.com/warpdesign/electron-window-state.git",
         "get-folder-size": "^2.0.1",
+        "goblin-cache": "^1.1.0",
+        "htmlparser2": "^9.0.0",
         "i18next": "^22.0.5",
+        "lodash": "^4.17.21",
         "mkdirp": "^0.5.1",
-        "mobx": "^6.6.2",
         "mobx-react": "^7.5.3",
+        "mobx": "^6.6.2",
         "node-disk-info": "git+https://git@github.com/warpdesign/node-disk-info.git",
-        "react": "^16.9.0",
-        "react-dnd": "^14.0.5",
         "react-dnd-html5-backend": "^14.1.0",
+        "react-dnd": "^14.0.5",
         "react-dom": "^16.9.0",
         "react-i18next": "^12.0.0",
-        "react-virtual": "^2.10.4"
+        "react-select": "^5.7.4",
+        "react-virtual": "^2.10.4",
+        "react": "^16.9.0",
+        "styled-components": "^6.0.7",
+        "worker-loader": "^3.0.8"
     }
 }

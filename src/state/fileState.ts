@@ -82,6 +82,7 @@ export class FileState {
             return Promise.resolve()
         }
     }
+    qpath: string
 
     setStatus(status: TStatus, error = false): void {
         this.status = status
@@ -247,7 +248,9 @@ export class FileState {
     }
 
     onFSChange = (filename: string): void => {
-        this.reload()
+        if (this.viewmode !== 'tiles') {
+            //this.reload()
+        }
     }
 
     private getNewFS(path: string, skipContext = false): Fs {
@@ -526,6 +529,61 @@ export class FileState {
     }
 
     cd(path: string, path2 = '', skipHistory = false, skipContext = false): Promise<string> {
+        // if (path2 === '' ){
+        //     return Promise.resolve(path)
+        // }
+        if (path.startsWith('query')) {
+            const tag = path.split(':')[1]
+            //ipcRenderer.invoke('query-file-tags', tag)
+
+            return new Promise((resolve) => {
+                fetch('http://localhost:3000/tags/resources?query=' + tag)
+                    .then((response) => response.json())
+                    .then((fileUrls: { fileurl: string; tags: string }[]) => {
+                        const fileDescriptors: FileDescriptor[] = fileUrls.map(({ fileurl, tags }) => {
+                            const _fileurl = fileurl.replaceAll('/', '\\')
+                            const parts = _fileurl.split('\\')
+
+                            const name = parts.pop() || ''
+                            const dir = parts.join('\\')
+
+                            // Extract extension
+                            const extensionParts = name.split('.')
+                            const extension = extensionParts.length > 1 ? '.' + extensionParts.pop() : ''
+
+                            // Mocking FileID
+                            const fileID: FileID = {
+                                ino: BigInt(Math.floor(Math.random() * 1000000000)), // Mock random inode number
+                                dev: BigInt(123), // Mock device number
+                            }
+                            // Mock the rest of the FileDescriptor
+                            return {
+                                dir: dir,
+                                name: extensionParts[0],
+                                fullname: name,
+                                extension: extension, // Mock, extract real extension from name
+                                target: new Buffer('Mock Buffer'), // Mock, should be real target
+                                cDate: new Date(2022, 1, 1),
+                                mDate: new Date(2022, 1, 2),
+                                bDate: new Date(2022, 1, 3),
+                                length: 1024, // Mock, should be real file size
+                                mode: 0o755, // Mock, should be real mode
+                                isDir: false,
+                                readonly: false,
+                                type: 'img', // Mock, should be a real FileType
+                                isSym: false,
+                                id: fileID,
+                                tags,
+                            }
+                        })
+                        this.sortOrder = 'none'
+                        this.updateFiles(fileDescriptors)
+                        this.qpath = path
+
+                        resolve(path)
+                    })
+            })
+        }
         // first updates fs (eg. was local fs, is now ftp)
         if (this.path !== path) {
             if (this.getNewFS(path, skipContext)) {
@@ -542,7 +600,6 @@ export class FileState {
 
         return this.cwd(path, path2, skipHistory)
     }
-
     // changes current path and retrieves file list
     cwd = withConnection(async (path: string, path2 = '', skipHistory = false): Promise<string> => {
         const joint = path2 ? this.join(path, path2) : this.api.sanityze(path)
@@ -550,7 +607,8 @@ export class FileState {
 
         try {
             const path = await this.api.cd(joint)
-            const files = await this.list(path)
+            const files: FileDescriptor[] = await this.list(path)
+
             runInAction(() => {
                 const isSameDir = this.path === path
 
@@ -660,6 +718,7 @@ export class FileState {
 
     openDirectory(file: { dir: string; fullname: string }): Promise<string | void> {
         console.log(file.dir, file.fullname)
+
         return this.cd(file.dir, file.fullname)
     }
 

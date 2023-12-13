@@ -11,7 +11,6 @@ import { ReactiveProperties } from '$src/types'
 
 const ENV_E2E = !!process.env.E2E
 const HTML_PATH = `${__dirname}/index.html`
-
 const ElectronApp = {
     mainWindow: null as Electron.BrowserWindow,
     devWindow: null as Electron.BrowserWindow,
@@ -69,6 +68,7 @@ const ElectronApp = {
             // height: settings.height,
             // x: settings.x,
             // y: settings.y,
+            fullscreen: true,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,

@@ -32,6 +32,10 @@ const baseConfig: webpack.Configuration = {
     module: {
         rules: [
             {
+                test: /\.worker\.ts$/,
+                use: { loader: 'worker-loader' },
+            },
+            {
                 test: /\.tsx?$/,
                 exclude: /(node_modules)/,
                 resolve: {
@@ -100,6 +104,11 @@ export default [
                     'window.ENV.BUILD_DATE': JSON.stringify(buildDate),
                 }),
             ],
+            watchOptions: {
+                ignored: /node_modules/,
+                aggregateTimeout: 300,
+                poll: 1000,
+            },
         },
         baseConfig,
     ),
@@ -110,7 +119,7 @@ export default [
             plugins: [
                 new ForkTsCheckerWebpackPlugin(),
                 new HtmlWebpackPlugin({
-                    title: 'React-Explorer',
+                    title: 'Curator-Desktop',
                     template: 'index.html',
                 }),
                 new DefinePlugin({

@@ -11,6 +11,8 @@ export type ISORT_METHODS = {
 export function getSortMethod(method: TSORT_METHOD_NAME, order: TSORT_ORDER): TSORT_METHOD {
     if (order === 'asc') {
         return SortMethods[method]
+    } else if (order === 'none') {
+        return () => 1
     } else {
         return (function (sortMethod) {
             return function (file1: FileDescriptor, file2: FileDescriptor) {

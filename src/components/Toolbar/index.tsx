@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { FileMenu } from '$src/components/FileMenu'
 import { MakedirDialog } from '$src/components/dialogs/MakedirDialog'
+import { SelectTagsDialog } from '$src/components/dialogs/SelectTagsDialog'
 import { AppAlert } from '$src/components/AppAlert'
 import { AppToaster } from '$src/components/AppToaster'
 import { LocalizedError } from '$src/locale/error'
@@ -25,6 +26,8 @@ interface Props {
 export const Toolbar = observer(({ active }: Props) => {
     const { appState, viewState } = useStores('appState', 'viewState')
     const [isMakedirDialogOpen, setIsMakedirDialogOpen] = useState(false)
+    const [isApplyTagsDialogOpen, setIsApplyTagsDialogOpen] = useState(false)
+    const [isRemoveTagsDialogOpen, setIsRemoveTagsDialogOpen] = useState(false)
     const cache = viewState.getVisibleCache()
     const { selected, history, current, viewmode, sortMethod, sortOrder } = cache
     const [path, setPath] = useState('')
@@ -96,6 +99,7 @@ export const Toolbar = observer(({ active }: Props) => {
     }
 
     const onBlur = (e: React.FocusEvent<HTMLInputElement>): void => {
+        /*
         const didClickOnSubmit = e.relatedTarget === submitButtonRef.current
         // restore previous valid cache unless an error alert has been displayed:
         // this will cause the input to loose focus but we don't want to update the path
@@ -103,6 +107,7 @@ export const Toolbar = observer(({ active }: Props) => {
         if (!didClickOnSubmit && cache.path !== path && !document.body.classList.contains(Classes.OVERLAY_OPEN)) {
             setPath(cache.path)
         }
+        */
     }
 
     const onReload = (): void => cache.reload()
@@ -146,9 +151,44 @@ export const Toolbar = observer(({ active }: Props) => {
             appState.delete()
         }
     }
+    const onApplyTags = (tags: any[]) => {
+        setIsApplyTagsDialogOpen(false)
+        const selectedFiles = selected.map((file) => [file.dir, file.fullname].join('/').replaceAll('\\', '/'))
+        const tagNames = tags.map((it: any) => it.value)
+        const fileNames = selectedFiles
+        fetch('http://localhost:3000/tags/resources', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ fileNames, tagNames }),
+        })
+    }
+
+    const onRemoveTags = (tags: any[]) => {
+        setIsRemoveTagsDialogOpen(false)
+        const tagNames = tags.map((it: any) => it.value)
+        fetch('http://localhost:3000/tags/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ tagNames }),
+        })
+    }
 
     const onFileAction = (action: string): void => {
         switch (action) {
+            case 'applytags':
+                if (appState.getActiveCache() === cache) {
+                    setIsApplyTagsDialogOpen(true)
+                }
+                break
+            case 'removetags':
+                if (appState.getActiveCache() === cache) {
+                    setIsRemoveTagsDialogOpen(true)
+                }
+                break
             case 'makedir':
                 console.log('Opening new folder dialog')
                 onMakedir()
@@ -254,6 +294,20 @@ export const Toolbar = observer(({ active }: Props) => {
                         onValidation={cache.isDirectoryNameValid}
                         parentPath={path}
                     ></MakedirDialog>
+                )}
+                {isApplyTagsDialogOpen && (
+                    <SelectTagsDialog
+                        isOpen={true}
+                        onApplyTags={onApplyTags}
+                        onClose={() => setIsApplyTagsDialogOpen(false)}
+                    />
+                )}
+                {isRemoveTagsDialogOpen && (
+                    <SelectTagsDialog
+                        isOpen={true}
+                        onApplyTags={onRemoveTags}
+                        onClose={() => setIsRemoveTagsDialogOpen(false)}
+                    />
                 )}
 
                 <Button

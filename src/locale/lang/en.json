@@ -76,7 +76,7 @@
         "SHORTCUT": {
             "OPEN_DEVTOOLS": "Dev tools",
             "MAIN": {
-                "QUIT": "Exit React-Explorer",
+                "QUIT": "Exit Curator-Desktop",
                 "RELOAD_VIEW": "Reload current view",
                 "NEXT_VIEW": "Activate next view",
                 "PREVIOUS_VIEW": "Activate previous view",
@@ -129,7 +129,8 @@
             "ICON_VIEW": "Icons",
             "DETAILS_VIEW": "Details",
             "CHANGE_VIEW": "Change display mode",
-            "CHANGE_SORT_METHOD": "Change files sort order"
+            "CHANGE_SORT_METHOD": "Change files sort order",
+            "TILE_VIEW": "Tiles"
         },
         "COMMON": {
             "SIZE": {
@@ -228,7 +229,7 @@
         "APP_MENUS": {
             "ABOUT": "About React-Explorer",
             "PREFS": "Preferences",
-            "EXIT": "Quit React-Explorer",
+            "EXIT": "Quit Curator-Desktop",
             "TITLE_FILE": "File",
             "TITLE_EDIT": "Edit",
             "TITLE_VIEW": "View",
@@ -248,7 +249,7 @@
             "RELOAD_VIEW": "Reload Active View",
             "FORCE_RELOAD_APP": "Force Reload App",
             "KEYBOARD_SHORTCUTS": "Keyboard Map",
-            "ABOUT_TITLE": "React-Explorer",
+            "ABOUT_TITLE": "Curator-Desktop",
             "ABOUT_CONTENT": "Version ${version}\nCommit: ${hash}\nDate: ${date}\nElectron: ${electron}\nChrome: ${chrome}\nNode: ${node}\nOS: ${platform} ${arch} ${release}",
             "ZOOM": "Zoom",
             "MINIMIZE": "Minimize",

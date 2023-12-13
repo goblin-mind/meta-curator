@@ -12,6 +12,13 @@ interface FileMenuProps {
 }
 
 export const FileMenu = observer(({ onFileAction, selectedItemsLength, isDisabled }: FileMenuProps) => {
+    const onApplyTags = (): void => {
+        onFileAction('applytags')
+    }
+    const onRemoveTags = (): void => {
+        onFileAction('removetags')
+    }
+
     const onNewfolder = (): void => {
         onFileAction('makedir')
     }
@@ -31,6 +38,14 @@ export const FileMenu = observer(({ onFileAction, selectedItemsLength, isDisable
     return (
         <>
             <Menu>
+                <MenuItem
+                    text={t('FILEMENU.APPLY_TAGS')}
+                    icon="tag"
+                    onClick={onApplyTags}
+                    disabled={!selectedItemsLength || isDisabled}
+                />
+                <MenuItem text={t('FILEMENU.REMOVE_TAGS')} icon="tag" onClick={onRemoveTags} disabled={isDisabled} />
+                <MenuDivider />
                 <MenuItem disabled={isDisabled} text={t('COMMON.MAKEDIR')} icon="folder-new" onClick={onNewfolder} />
                 <MenuDivider />
                 <MenuItem

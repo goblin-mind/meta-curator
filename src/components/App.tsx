@@ -117,7 +117,7 @@ const App = observer(() => {
         }
 
         console.log(
-            `React-Explorer ${window.ENV.VERSION} - CY: ${window.ENV.CY} - NODE_ENV: ${window.ENV.NODE_ENV} - lang: ${i18n.language}`,
+            `Curator-Desktop ${window.ENV.VERSION} - CY: ${window.ENV.CY} - NODE_ENV: ${window.ENV.NODE_ENV} - lang: ${i18n.language}`,
         )
         console.log(`hash=${window.ENV.HASH}`)
         console.log(
